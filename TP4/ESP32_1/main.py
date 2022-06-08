@@ -4,11 +4,7 @@ import json
 
 i2c = SoftI2C(scl=Pin(15), sda=Pin(4))
 rst = Pin(16, Pin.OUT)
-# ESP32 Wifi kit 32 Pin assignment 
 led = Pin(25, Pin.OUT)
-
-# ESP32  TTGO LoRa32 Pin assignment 
-#led = Pin(2, Pin.OUT)
 
 oled_width = 128
 oled_height = 64
@@ -25,7 +21,7 @@ def sub_cb(topic, new_message):
 
     ctrl = msg["control"]
     frwd = msg["forward"]
-    ip = msg["ip"]
+    ip = msg["ip"].replace('\n', '')
 
     if frwd:
       msg["esp32"] = client_id
@@ -35,7 +31,12 @@ def sub_cb(topic, new_message):
       led.value(1)
     else:
       led.value(0)
+    
+    # Clean display
+    oled.fill(0)
+    oled.show()
 
+    # Show information
     oled.text('control:'+ctrl, 0, 0)
     oled.text('forward:'+frwd, 0, 10)
     oled.text('ip:'+ip, 0, 20)
