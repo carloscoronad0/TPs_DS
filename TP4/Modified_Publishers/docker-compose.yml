@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+  # BROKER SERVICE ---------------------------------------------
+  broker:
+    image: eclipse-mosquitto:latest
+    # General configuration --------------
+    ports:
+      - 1883:1883
+    volumes:
+      - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
+    # Deployment configuration -----------
+    deploy:
+      replicas: 1
+      restart_policy: 
+        condition: on-failure
+  # PUBLISHER SERVICE ------------------------------------------
+  publisher:
+    image: pub-im
+    build: ./Publisher
+    # General configuration --------------
+    env_file:
+      - ./Publisher/pub.env
+    # Deployment configuration -----------
+    deploy:
+      replicas: 5
+      restart_policy:
+        condition: on-failure
