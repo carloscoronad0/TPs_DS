@@ -1,4 +1,14 @@
+from machine import Pin, SoftI2C
+import ssd1306
 import json
+
+i2c = SoftI2C(scl=Pin(15), sda=Pin(4))
+rst = Pin(16, Pin.OUT)
+# ESP32 Wifi kit 32 Pin assignment 
+led = Pin(25, Pin.OUT)
+
+# ESP32  TTGO LoRa32 Pin assignment 
+#led = Pin(2, Pin.OUT)
 
 def sub_cb(mq,topic, new_message):
   global topic_sub, topic_pub
@@ -6,9 +16,21 @@ def sub_cb(mq,topic, new_message):
   if topic == topic_sub:
     new_message = new_message.decode('utf-8')
     msg = json.loads(new_message)
-    if msg["forward"] == 'TRUE':
+    ctrl = msg['control']
+    frwd = msg['forward']
+    ip = msg['ip']
+    if frwd == 'TRUE':
       msg["esp32"]=client_id
       mq.publish(topic_pub, json.dumps(msg))
+    if ctrl=="ON":
+    led.value(1)
+    else:
+    led.value(0)
+
+    oled.text('control:'+ctrl, 0, 0)
+    oled.text('forward:'+frwd, 0, 10)
+    oled.text('ip:'+ip, 0, 20)
+    oled.show()
 
 def connect_and_subscribe():
   global client_id, mqtt_server, topic_sub, mqtt_port
