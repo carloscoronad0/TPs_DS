@@ -11,8 +11,8 @@ gc.collect()
 
 client = None
 
-ssid = 'INFO'
-password = 'teleinfo2019'
+ssid = 'TIGO-Coronado_plus'
+password = 'CMLTT02868'
 mqtt_server = 'research.upb.edu'
 mqtt_port = '21142'
 client_id = ubinascii.hexlify(machine.unique_id())

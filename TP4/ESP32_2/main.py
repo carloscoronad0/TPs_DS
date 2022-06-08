@@ -10,6 +10,11 @@ led = Pin(25, Pin.OUT)
 # ESP32  TTGO LoRa32 Pin assignment 
 #led = Pin(2, Pin.OUT)
 
+oled_width = 128
+oled_height = 64
+rst.value(1)
+oled = ssd1306.SSD1306_I2C(oled_width, oled_height, i2c)
+
 def sub_cb(topic, new_message):
   global client, topic_sub
   print((topic, new_message))
@@ -23,10 +28,10 @@ def sub_cb(topic, new_message):
     ip = msg["ip"]
     esp = msg["esp32"]
 
-    if ctrl=="ON":
-        led.value(1)
+    if ctrl=="On":
+      led.value(1)
     else:
-        led.value(0)
+      led.value(0)
 
     oled.text('control:'+ctrl, 0, 0)
     oled.text('forward:'+frwd, 0, 10)
