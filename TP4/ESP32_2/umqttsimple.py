@@ -191,7 +191,7 @@ class MQTTClient:
             pid = pid[0] << 8 | pid[1]
             sz -= 2
         msg = self.sock.read(sz)
-        self.cb(self,topic, msg) #JMVT was here
+        self.cb(topic, msg) #JMVT was here
         if op & 6 == 2:
             pkt = bytearray(b"\x40\x02\0\0")
             struct.pack_into("!H", pkt, 2, pid)

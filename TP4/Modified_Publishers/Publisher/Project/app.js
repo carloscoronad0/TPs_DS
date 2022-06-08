@@ -5,8 +5,11 @@ const { exec } = require("child_process");
 var broker = process.env.NOMBREBROK;
 var port = process.env.PORT;
 var topic = process.env.TOPIC;
-
 var ip
+
+var control_values = ['Off', 'On']
+var forward_values = [false, true]
+
 exec("hostname -I",(error, stdout, stderr) => {
   if (error) {
       console.log(`error: ${error.message}`);
@@ -27,7 +30,11 @@ var client = mqtt.connect(complete_host_URI);
 
 client.on('connect', function () {
   setInterval(function (){
-    msg = {"control":randomDecision(), "forward":randomDecision(), "ip":ip}
+    msg = {
+        "control":control_values[randomDecision()], 
+        "forward":forward_values[randomDecision()], 
+        "ip":ip
+    }
     client.publish(topic, JSON.stringify(msg));
   }, 5000);
 })

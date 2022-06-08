@@ -9,6 +9,8 @@ esp.osdebug(None)
 import gc
 gc.collect()
 
+client = None
+
 ssid = 'INFO'
 password = 'teleinfo2019'
 mqtt_server = 'research.upb.edu'
