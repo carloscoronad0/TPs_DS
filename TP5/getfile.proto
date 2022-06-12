@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package getfile;
+
+service GetFile {
+    rpc ClientGetFile (Empty) returns (RegisterInfo);
+}
+
+message FileInfo {
+    string  name = 1;
+    string  size = 2;
+    string  IDSlave = 3;
+    bool    hasNext = 4;
+}
