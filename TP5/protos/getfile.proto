@@ -3,8 +3,10 @@ syntax = "proto3";
 package getfile;
 
 service GetFile {
-    rpc ClientGetFile (Empty) returns (FileInfo) {}
+    rpc ClientGetFile (Void) returns (FileInfo) {}
 }
+
+message Void {}
 
 message FileInfo {
     string  name = 1;
