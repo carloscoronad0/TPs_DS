@@ -3,7 +3,7 @@ syntax = "proto3";
 package registry;
 
 service Register {
-    rpc ClientRegistry (ClientInfo) returns (RegisterInfo);
+    rpc ClientRegistry (ClientInfo) returns (RegisterInfo) {}
 }
 
 message ClientInfo {
