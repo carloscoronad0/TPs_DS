@@ -6,6 +6,8 @@ EXPOSE 80
 EXPOSE 443
 EXPOSE 50051
 EXPOSE 50052
+EXPOSE 21242
+EXPOSE 1883
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS build
 WORKDIR /src/protos

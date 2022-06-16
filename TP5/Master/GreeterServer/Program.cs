@@ -40,10 +40,19 @@ namespace GreeterServer
         public static async Task Main(string[] args)
         {
             //gRPC
+            Console.WriteLine("IP");
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    Console.WriteLine(ip.ToString());
+                }
+            }
             Server server = new Server
             {
                 Services = { Register.BindService(new RegisterService()) },
-                Ports = { new ServerPort("localhost", Port, ServerCredentials.Insecure) }
+                Ports = { new ServerPort(host.AddressList[0].ToString(), Port, ServerCredentials.Insecure) }
             };
             server.Start();
 
@@ -146,15 +155,7 @@ namespace GreeterServer
             Console.WriteLine("MQTT client subscribed to topic.");
 
             //Console
-            Console.WriteLine("IP");
-            var host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (var ip in host.AddressList)
-            {
-                if (ip.AddressFamily == AddressFamily.InterNetwork)
-                {
-                    Console.WriteLine(ip.ToString());
-                }
-            }
+            
             Console.WriteLine("Greeter server listening on port " + Port);
             Console.WriteLine("Press any key to stop the server...");
             Thread.Sleep(Timeout.Infinite);
