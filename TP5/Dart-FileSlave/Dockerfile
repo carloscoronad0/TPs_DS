@@ -15,6 +15,9 @@ EXPOSE 30000-40000/tcp
 WORKDIR /file-slave
 COPY file-slave .
 
+RUN mkdir ./lib/src/getfile_service
+RUN mkdir ./lib/src/register_service
+
 RUN dart pub get
 RUN ["protoc", "-I", "protos", "protos/getfile.proto", "--dart_out=grpc:./lib/src/getfile_service"]
 RUN ["protoc", "-I", "protos", "protos/registry.proto", "--dart_out=grpc:./lib/src/register_service"]
