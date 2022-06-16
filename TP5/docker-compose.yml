@@ -41,7 +41,6 @@ services:
     # General configuration --------------
     environment:
       IPSERVER: filemaster
-      FOLDER: /proc
     depends_on:
       - filemaster
     # Deployment configuration -----------
