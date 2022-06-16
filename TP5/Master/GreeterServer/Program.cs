@@ -86,7 +86,7 @@ namespace GreeterServer
                 {
                     foreach(var slave in Globals.slaves)
                     {
-                        channel = new Channel($"{slave.IP}:30052", ChannelCredentials.Insecure);
+                        channel = new Channel($"{slave.IP}:50052", ChannelCredentials.Insecure);
                         client = new GetFile.GetFileClient(channel);
                         using (var call = client.ClientGetFile(new Void()))
                         {
@@ -122,7 +122,7 @@ namespace GreeterServer
                     {
                         channel = new Channel($"{slave.IP}:30052", ChannelCredentials.Insecure);
                         client = new GetFile.GetFileClient(channel);
-                        using (var call = client.ClientGetFile(new Void()))
+                        using (var call = await client.ClientGetFile(new Void()))
                         {
                             var responseStream = call.ResponseStream;
                             string fileInfo = "";
