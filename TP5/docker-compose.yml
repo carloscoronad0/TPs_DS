@@ -18,15 +18,14 @@ services:
         constraints:
           - "node.role==manager"
   # FILE MASTER ------------------------------------------------
-  file-master:
+  filemaster:
     image: 10.1.2.114:5000/master
     build: ./Master
     # General configuration --------------
-    container_name: master
-    ports:
-      - 50051:50051
-    env_file:
-      - master.env
+    environment:
+      IP_HOST: broker
+    depends_on:
+      - broker
     # Deployment configuration -----------
     deploy:
       mode: global
@@ -40,8 +39,11 @@ services:
     image: 10.1.2.114:5000/node-slave
     build: ./fs-node
     # General configuration --------------
-    env_file:
-      - node_slave.env
+    environment:
+      IPSERVER: filemaster
+      FOLDER: /proc
+    depends_on:
+      - filemaster
     # Deployment configuration -----------
     deploy:
       replicas: 2
@@ -57,8 +59,10 @@ services:
     image: 10.1.2.114:5000/dart-slave
     build: ./Dart-FileSlave
     # General configuration --------------
-    env_file:
-      - dart_slave.env
+    environment:
+      SERVER_IP: filemaster
+    depends_on:
+      - filemaster
     # Deployment configuration -----------
     deploy:
       replicas: 2
