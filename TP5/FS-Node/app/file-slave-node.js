@@ -41,20 +41,20 @@ var ip = require("ip");
 var ipslave = ip.address();
 function main() {
 
-    var client = new registry.Register('localhost:50051', grpc.credentials.createInsecure());
+    var client = new registry.Register(process.env.IPSERVER':50051', grpc.credentials.createInsecure());
     client.ClientRegistry({
         "IP": ipslave,
         "name": "slave-nodejs"
     }, function(err, response) {
     console.log("Se mandaron datos para el registro");
-    console.log(ip.address());
+    console.log(ipslave);
     console.log(response);
 
     });
 
     var server = new grpc.Server();
     server.addService(getfile.GetFile.service, {ClientGetFile: ClientGetFile});
-    server.bindAsync('0.0.0.0:50052', grpc.ServerCredentials.createInsecure(), () => {
+    server.bindAsync(ipslave + ':50052', grpc.ServerCredentials.createInsecure(), () => {
       server.start();
     });
     console.log("Corriendo el Servidor");
