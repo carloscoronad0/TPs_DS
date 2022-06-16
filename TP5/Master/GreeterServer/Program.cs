@@ -112,7 +112,7 @@ namespace GreeterServer
                 else
                 {
                     var command = message.Split(' ');
-                    if (command[0] != "file")
+                    if (command[0] != "find")
                     {
                         applicationMessage = new MqttApplicationMessageBuilder()
                                 .WithTopic("upb/file/result")
