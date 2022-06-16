@@ -48,6 +48,7 @@ function main() {
     }, function(err, response) {
     console.log("Se mandaron datos para el registro");
     console.log(ip.address());
+    console.log(response);
 
     });
 
