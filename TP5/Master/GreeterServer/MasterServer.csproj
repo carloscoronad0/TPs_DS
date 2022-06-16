@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <OutputType>Exe</OutputType>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.21.1" />
+    <PackageReference Include="Grpc" Version="2.46.3" />
+    <PackageReference Include="Grpc.Tools" Version="2.46.3">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="MQTTnet" Version="4.0.0.167" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\protos\Protos.csproj" />
+  </ItemGroup>
+
+</Project>

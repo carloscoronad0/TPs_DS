@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 package getfile;
+option csharp_namespace = "GreeterServer";
 
 service GetFile {
     rpc ClientGetFile (Void) returns (stream FileInfo) {}
@@ -11,5 +12,5 @@ message Void {}
 message FileInfo {
     string  name = 1;
     string  size = 2;
-    string  IDSlave = 3; // <IP_container>:$IPMAQUINA
+    string  IDSlave = 3;
 }
