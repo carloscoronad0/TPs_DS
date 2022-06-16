@@ -1,0 +1,7 @@
+file-slave/lib/src/getfile_service/*
+file-slave/lib/src/register_service/*
+
+file-slave/.dart_tool/
+file-slave/.packages
+
+file-slave/build/
