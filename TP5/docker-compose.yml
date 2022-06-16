@@ -23,6 +23,8 @@ services:
     # General configuration --------------
     ports:
       - 50051:50051
+    env_file:
+      - master.env
     # Deployment configuration -----------
     deploy:
       replicas: 1
