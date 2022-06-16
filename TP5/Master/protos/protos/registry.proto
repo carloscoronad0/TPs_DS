@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package registry;
+option csharp_namespace = "GreeterServer";
+
+service Register {
+    rpc ClientRegistry (ClientInfo) returns (RegisterInfo) {}
+}
+
+message ClientInfo {
+    string IP = 1;
+    string name = 2;
+}
+
+message RegisterInfo {
+    bool Success = 1;
+}

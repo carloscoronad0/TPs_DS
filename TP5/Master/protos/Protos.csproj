@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.5</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="protos\getfile.proto" />
+    <None Remove="protos\registry.proto" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Google.Protobuf" Version="3.19.4" />
+    <PackageReference Include="Grpc" Version="2.44.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.44.0" PrivateAssets="All" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Protobuf Include="protos\getfile.proto" />
+    <Protobuf Include="protos\registry.proto" />
+  </ItemGroup>
+
+</Project>
