@@ -18,7 +18,7 @@ services:
           - "node.role==manager"
   # FILE MASTER ------------------------------------------------
   file-master:
-    image: 10.1.2.124:5000/master
+    image: 10.1.2.114:5000/master
     build: ./Master
     # General configuration --------------
     ports:
@@ -35,7 +35,7 @@ services:
           - "node.role==manager"
   # NODE FILE SLAVE --------------------------------------------
   node-slave:
-    image: 10.1.2.124:5000/node-slave
+    image: 10.1.2.114:5000/node-slave
     build: ./fs-node
     # General configuration --------------
     env_file:
@@ -52,7 +52,7 @@ services:
 
   # DART FILE SLAVE --------------------------------------------
   dart-slave:
-    image: 10.1.2.124:5000/dart-slave
+    image: 10.1.2.114:5000/dart-slave
     build: ./Dart-FileSlave
     # General configuration --------------
     env_file:
