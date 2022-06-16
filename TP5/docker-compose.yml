@@ -4,13 +4,14 @@ services:
   broker:
     image: eclipse-mosquitto:latest
     # General configuration --------------
+    container_name: broker
     ports:
       - 1883:1883
     volumes:
       - ./mosquitto.conf:/mosquitto/config/mosquitto.conf
     # Deployment configuration -----------
     deploy:
-      replicas: 1
+      mode: global
       restart_policy: 
         condition: on-failure
       placement:
@@ -21,13 +22,14 @@ services:
     image: 10.1.2.114:5000/master
     build: ./Master
     # General configuration --------------
+    container_name: master
     ports:
       - 50051:50051
     env_file:
       - master.env
     # Deployment configuration -----------
     deploy:
-      replicas: 1
+      mode: global
       restart_policy:
         condition: on-failure
       placement:
