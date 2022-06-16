@@ -1,17 +1,3 @@
-// Copyright 2015 gRPC authors.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 using System;
 using System.Net;
 using System.Net.Sockets;
@@ -38,10 +24,6 @@ namespace GreeterServer
                     name = request.Name
                 });
                 output.Success = true;
-                foreach (var s in Globals.slaves)
-                {
-                    Console.WriteLine($"IP: {s.IP} - name: {s.name}");
-                }
             }
             catch
             {
@@ -68,40 +50,80 @@ namespace GreeterServer
             //MQTT
             var mqttFactory = new MqttFactory();
 
-            using (var mqttClient = mqttFactory.CreateMqttClient())
+            var mqttClient = mqttFactory.CreateMqttClient();
+
+            var mqttClientOptions = new MqttClientOptionsBuilder()
+                .WithTcpServer("research.upb.edu", 21242)
+                .WithClientId("Server")
+                .Build();
+
+            mqttClient.ApplicationMessageReceivedAsync += async e =>
             {
-                var mqttClientOptions = new MqttClientOptionsBuilder()
-                    .WithTcpServer("research.upb.edu", 21242)
-                    .WithClientId("Server")
-                    .Build();
+                Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
+                Console.WriteLine($"+ Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
+                Console.WriteLine($"+ QoS = {e.ApplicationMessage.QualityOfServiceLevel}");
 
-                mqttClient.ApplicationMessageReceivedAsync += async e =>
+                var message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
+                Channel channel;
+                GetFile.GetFileClient client;
+
+                var applicationMessage = new MqttApplicationMessageBuilder()
+                                    .WithTopic("upb/file/result")
+                                    .WithPayload($"Response for {message}")
+                                    .Build();
+                await mqttClient.PublishAsync(applicationMessage, CancellationToken.None);
+
+                if (message == "dir")
                 {
-                    Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
-                    Console.WriteLine($"+ Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
-                    Console.WriteLine($"+ QoS = {e.ApplicationMessage.QualityOfServiceLevel}");
-
-                    var message = Encoding.UTF8.GetString(e.ApplicationMessage.Payload);
-                    Channel channel;
-                    GetFile.GetFileClient client;
-
-
-                    if (message == "dir")
+                    foreach(var slave in Globals.slaves)
                     {
-                        foreach(var slave in Globals.slaves)
+                        channel = new Channel($"{slave.IP}:30052", ChannelCredentials.Insecure);
+                        client = new GetFile.GetFileClient(channel);
+                        using (var call = client.ClientGetFile(new Void()))
                         {
-                            channel = new Channel($"{slave.IP}:30052", ChannelCredentials.Insecure);
-                            client = new GetFile.GetFileClient(channel);
-                            using (var call = client.ClientGetFile(new Void()))
+                            var responseStream = call.ResponseStream;
+                            string fileInfo = "";
+                            while (await responseStream.MoveNext())
                             {
-                                var responseStream = call.ResponseStream;
-                                string fileInfo = "";
-                                while (await responseStream.MoveNext())
-                                {
-                                    var file = responseStream.Current;
-                                    fileInfo = $"Name: {file.Name}    Size: {file.Size}    IPSource: {file.IDSlave}";
+                                var file = responseStream.Current;
+                                fileInfo = $"Name: {file.Name}    Size: {file.Size}    IPSource: {file.IDSlave}";
 
-                                    var applicationMessage = new MqttApplicationMessageBuilder()
+                                applicationMessage = new MqttApplicationMessageBuilder()
+                                .WithTopic("upb/file/result")
+                                .WithPayload(fileInfo)
+                                .Build();
+                                await mqttClient.PublishAsync(applicationMessage, CancellationToken.None);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    var command = message.Split(' ');
+                    if (command[0] != "file")
+                    {
+                        applicationMessage = new MqttApplicationMessageBuilder()
+                                .WithTopic("upb/file/result")
+                                .WithPayload("Invalid Request")
+                                .Build();
+                        await mqttClient.PublishAsync(applicationMessage, CancellationToken.None);
+                        return;
+                    }
+                    foreach (var slave in Globals.slaves)
+                    {
+                        channel = new Channel($"{slave.IP}:30052", ChannelCredentials.Insecure);
+                        client = new GetFile.GetFileClient(channel);
+                        using (var call = client.ClientGetFile(new Void()))
+                        {
+                            var responseStream = call.ResponseStream;
+                            string fileInfo = "";
+                            while (await responseStream.MoveNext())
+                            {
+                                var file = responseStream.Current;
+                                if (file.Name == command[1])
+                                {
+                                    fileInfo = $"Name: {file.Name}    Size: {file.Size}    IPSource: {file.IDSlave}";
+                                    applicationMessage = new MqttApplicationMessageBuilder()
                                     .WithTopic("upb/file/result")
                                     .WithPayload(fileInfo)
                                     .Build();
@@ -110,63 +132,33 @@ namespace GreeterServer
                             }
                         }
                     }
-                    else
-                    {
-                        var command = message.Split(' ');
-                        if (command[0] != "file")
-                        {
-                            return;
-                        }
-                        foreach (var slave in Globals.slaves)
-                        {
-                            channel = new Channel($"{slave.IP}:30052", ChannelCredentials.Insecure);
-                            client = new GetFile.GetFileClient(channel);
-                            using (var call = client.ClientGetFile(new Void()))
-                            {
-                                var responseStream = call.ResponseStream;
-                                string fileInfo = "";
-                                while (await responseStream.MoveNext())
-                                {
-                                    var file = responseStream.Current;
-                                    if (file.Name == command[1])
-                                    {
-                                        fileInfo = $"Name: {file.Name}    Size: {file.Size}    IPSource: {file.IDSlave}";
-                                        var applicationMessage = new MqttApplicationMessageBuilder()
-                                        .WithTopic("upb/file/result")
-                                        .WithPayload(fileInfo)
-                                        .Build();
-                                        await mqttClient.PublishAsync(applicationMessage, CancellationToken.None);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                };
-
-                await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
-
-                var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
-                    .WithTopicFilter(f => { f.WithTopic("upb/file/search"); })
-                    .Build();
-
-                await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
-
-                Console.WriteLine("MQTT client subscribed to topic.");
-
-                //Console
-                Console.WriteLine("IP");
-                var host = Dns.GetHostEntry(Dns.GetHostName());
-                foreach (var ip in host.AddressList)
-                {
-                    if (ip.AddressFamily == AddressFamily.InterNetwork)
-                    {
-                        Console.WriteLine(ip.ToString());
-                    }
                 }
-                Console.WriteLine("Greeter server listening on port " + Port);
-                Console.WriteLine("Press any key to stop the server...");
-                Thread.Sleep(Timeout.Infinite);
+            };
+
+            await mqttClient.ConnectAsync(mqttClientOptions, CancellationToken.None);
+
+            var mqttSubscribeOptions = mqttFactory.CreateSubscribeOptionsBuilder()
+                .WithTopicFilter(f => { f.WithTopic("upb/file/search"); })
+                .Build();
+
+            await mqttClient.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None);
+
+            Console.WriteLine("MQTT client subscribed to topic.");
+
+            //Console
+            Console.WriteLine("IP");
+            var host = Dns.GetHostEntry(Dns.GetHostName());
+            foreach (var ip in host.AddressList)
+            {
+                if (ip.AddressFamily == AddressFamily.InterNetwork)
+                {
+                    Console.WriteLine(ip.ToString());
+                }
             }
+            Console.WriteLine("Greeter server listening on port " + Port);
+            Console.WriteLine("Press any key to stop the server...");
+            Thread.Sleep(Timeout.Infinite);
+
             server.ShutdownAsync().Wait();
         }
         //public static async Task Dir(GetFile.GetFileClient client, IMqttClient mqttClient)
