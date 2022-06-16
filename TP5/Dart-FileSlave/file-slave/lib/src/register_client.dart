@@ -3,7 +3,11 @@ import 'dart:io';
 import 'package:grpc/grpc.dart';
 
 class Client {
-    Future<String> main(String server_address) async {
+    Future<String> main() async {
+        Map<String, String> envVars = Platform.environment;
+        String server_address = envVars['SERVER_IP'] ?? 'localhost';
+
+        //final udsAddress = InternetAddress(server_address, type: InternetAddressType.IPv4);
         final channel = ClientChannel(
             server_address,
             port: 50051,
@@ -31,10 +35,7 @@ class Client {
                         ..iP = ip_address
                         ..name = 'Dart file-slave';
         while (true) {
-            RegisterInfo response = await stub.clientRegistry(
-                cl_info,
-                options: CallOptions(timeout: Duration(seconds: 30))
-            );
+            RegisterInfo response = await stub.clientRegistry(cl_info);
 
             if (response.success) {
                 break;

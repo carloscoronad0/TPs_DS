@@ -13,7 +13,7 @@ class GetFileService extends GetFileServiceBase {
 
     @override
     Stream<FileInfo> clientGetFile(grpc.ServiceCall call, Void request) async* {
-        final dir = Directory(path_to_dir);
+        final dir = Directory(this.path_to_dir);
         final List<FileSystemEntity> entities = await dir.list().toList();
 
         for (FileSystemEntity ent in entities) {
@@ -34,7 +34,7 @@ class GetFileService extends GetFileServiceBase {
 class Server {
     Future<void> main(String dir, String ip) async {
         final server = grpc.Server([GetFileService(dir, ip)]);
-        await server.serve(port: 50052);
+        await server.serve(address: ip, port: 50052);
         print('Server listening on port ${server.port}');
     }
 }
