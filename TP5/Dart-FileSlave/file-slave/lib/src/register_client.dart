@@ -3,9 +3,9 @@ import 'dart:io';
 import 'package:grpc/grpc.dart';
 
 class Client {
-    Future<void> main() async {
+    Future<String> main(String server_address) async {
         final channel = ClientChannel(
-            'localhost',
+            server_address,
             port: 50051,
             options: const ChannelOptions(credentials: ChannelCredentials.insecure())
         );
@@ -14,19 +14,19 @@ class Client {
             channel,
             options: CallOptions(timeout: Duration(seconds: 30))
         );
+        final ip_address = await getIpAddress();
 
         try {
-            await attemptRegister(stub);
+            await attemptRegister(stub, ip_address);
         } catch (e) {
             print('Caught error: $e');
         }
-
         await channel.shutdown();
+        
+        return ip_address;
     }
 
-    Future<void> attemptRegister(RegisterClient stub) async {
-        String ip_address = await getIpAddress();
-
+    Future<void> attemptRegister(RegisterClient stub, String ip_address) async {
         final cl_info = ClientInfo()
                         ..iP = ip_address
                         ..name = 'Dart file-slave';
