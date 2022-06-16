@@ -26,7 +26,7 @@ var registry = grpc.loadPackageDefinition(packageDefinition2).registry;
 
 
 var fs = require('fs');
-var testFolder = process.argv[2];
+var testFolder = process.env.FOLDER;
 
 function ClientGetFile(call){
     var files = fs.readdirSync(testFolder)

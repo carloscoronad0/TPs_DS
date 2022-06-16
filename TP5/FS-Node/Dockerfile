@@ -6,4 +6,4 @@ COPY app .
 COPY protos /usr/src/protos
 RUN npm install
 RUN npm install ip
-CMD ["node", "file-slave-node.js", "."]
+CMD ["node", "file-slave-node.js"]
