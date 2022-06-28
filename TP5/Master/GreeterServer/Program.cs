@@ -63,9 +63,8 @@ namespace GreeterServer
             var mqttFactory = new MqttFactory();
 
             var mqttClient = mqttFactory.CreateMqttClient();
-
             var mqttClientOptions = new MqttClientOptionsBuilder()
-                .WithTcpServer(hosts[0])
+                .WithTcpServer(Environment.GetEnvironmentVariable("IP_HOST"))
                 .WithClientId("Server")
                 .Build();
 
