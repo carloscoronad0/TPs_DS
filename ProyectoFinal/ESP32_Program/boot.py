@@ -15,7 +15,7 @@ import json
 
 client = None
 owner = "Prueba"
-tim = Timer(1)
+tim = machine.Timer(1)
 
 # Network configuration
 ssid = 'INFO'

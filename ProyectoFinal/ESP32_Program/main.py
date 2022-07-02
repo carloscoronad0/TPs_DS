@@ -16,8 +16,10 @@ def sub_cb(topic, new_message):
     msg = json.loads(new_message)
 
     esp_id = msg["Id"]
+    print(client_id.decode())
 
-    if esp_id == client_id:
+    if esp_id == client_id.decode():
+      print("Owner received-------------------")
       esp_owner = msg["Owner"]
 
       # Clean display
@@ -29,7 +31,8 @@ def sub_cb(topic, new_message):
       oled.text('Owner:'+esp_owner, 0, 10)
 
       if esp_owner != owner:
-        oled.text('Old owner:'+owner, 0, 20)
+        oled.text('OWNER CHANGED', 0, 20)
+        oled.text('Old owner:'+owner, 0, 30)
         owner = esp_owner
 
       oled.show()
@@ -48,7 +51,7 @@ def connect_and_subscribe():
 
   # Subscription to the result topic
   cli.subscribe(topic_result)
-  print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_sub))
+  print('Connected to %s MQTT broker, subscribed to %s topic' % (mqtt_server, topic_result))
   return cli
 
 def restart_and_reconnect():
