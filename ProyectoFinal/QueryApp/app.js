@@ -59,6 +59,7 @@ client.on('connect', function () {
 });
 
 client.on('message', function(topic, message) {
+	var json_msg = message.toString()
 	if (topic === 'register') {
 		console.log(message.toString())
 		json_msg = JSON.parse(message.toString())
