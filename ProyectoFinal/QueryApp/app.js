@@ -29,7 +29,7 @@ function prettyJSONString(inputString) {
 const client = mqtt.connect(complete_host_URI)
 
 // Contract code
-const gateway = null;
+var gateway = null;
 async function main(){
 	try {
 		const ccp = buildCCPOrg1();
