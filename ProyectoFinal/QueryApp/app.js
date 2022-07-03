@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-'use strict';
+// 'use strict';
 
 const mqtt = require('mqtt')
 const { Gateway, Wallets } = require('fabric-network');
