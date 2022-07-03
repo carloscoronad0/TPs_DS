@@ -30,16 +30,20 @@ const client = mqtt.connect(complete_host_URI)
 
 // Contract code
 const gateway = null;
-try {
-	const ccp = buildCCPOrg1();
-	const caClient = buildCAClient(FabricCAServices, ccp, 'ca.org1.example.com');
-	const wallet = await buildWallet(Wallets, walletPath);
-	await enrollAdmin(caClient, wallet, mspOrg1);
-	await registerAndEnrollUser(caClient, wallet, mspOrg1, org1UserId, 'org1.department1');
-	gateway = new Gateway();
-} catch (error) {
-	console.error(`******** FAILED to run the application: ${error}`);
+async function main(){
+	try {
+		const ccp = buildCCPOrg1();
+		const caClient = buildCAClient(FabricCAServices, ccp, 'ca.org1.example.com');
+		const wallet = await buildWallet(Wallets, walletPath);
+		await enrollAdmin(caClient, wallet, mspOrg1);
+		await registerAndEnrollUser(caClient, wallet, mspOrg1, org1UserId, 'org1.department1');
+		return new Gateway();
+	} catch (error) {
+		console.error(`******** FAILED to run the application: ${error}`);
+		return null
+	}
 }
+gateway = main();
 //mqtt actions
 client.on('connect', function () {
 	client.subscribe('/register', function (err) {
