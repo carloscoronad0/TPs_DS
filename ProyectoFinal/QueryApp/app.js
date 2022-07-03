@@ -67,7 +67,7 @@ client.on('message', function(topic, message) {
 		register(gateway,json_msg);
 	}
 	if (topic === 'verify') {
-		json_msg = JSON.parse(message.toString())
+		json_msg = JSON.parse(outs)
 		res = verify(gateway,json_msg);
 		client.publish('result', res);
 	}
