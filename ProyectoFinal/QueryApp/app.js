@@ -30,11 +30,14 @@ const client = mqtt.connect(complete_host_URI)
 
 // Contract code
 var gateway = null;
+var ccp = null;
+var caClient = null;
+var wallet = null;
 async function main(){
 	try {
-		const ccp = buildCCPOrg1();
-		const caClient = buildCAClient(FabricCAServices, ccp, 'ca.org1.example.com');
-		const wallet = await buildWallet(Wallets, walletPath);
+		ccp = buildCCPOrg1();
+		caClient = buildCAClient(FabricCAServices, ccp, 'ca.org1.example.com');
+		wallet = await buildWallet(Wallets, walletPath);
 		await enrollAdmin(caClient, wallet, mspOrg1);
 		await registerAndEnrollUser(caClient, wallet, mspOrg1, org1UserId, 'org1.department1');
 		return new Gateway();
