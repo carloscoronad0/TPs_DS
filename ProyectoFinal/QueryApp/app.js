@@ -46,12 +46,12 @@ async function main(){
 gateway = main();
 //mqtt actions
 client.on('connect', function () {
-	client.subscribe('/register', function (err) {
+	client.subscribe('register', function (err) {
 		if (err) {
 			console.log(err.message)
 		}
 	});
-	client.subscribe('/verify', function (err) {
+	client.subscribe('verify', function (err) {
 		if (err) {
 			console.log(err.message)
 		}
@@ -59,13 +59,14 @@ client.on('connect', function () {
 });
 
 client.on('message', function(topic, message) {
-	if (topic === '/register') {
+	if (topic === 'register') {
 		json_msg = JSON.parse(message)
 		register(gateway,json_msg);
 	}
-	if (topic === '/verify') {
+	if (topic === 'verify') {
 		json_msg = JSON.parse(message)
-		verify(gateway,json_msg);
+		res = verify(gateway,json_msg);
+		client.publish('results', res);
 	}
 });
 
@@ -80,20 +81,12 @@ async function register(gateway,msg) {
 
 		const contract = network.getContract(chaincodeName);
 
-		// console.log('\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger');
-		// let result = await contract.evaluateTransaction('GetAllAssets');
-		// console.log(`*** Result: ${prettyJSONString(result.toString())}`);
-
 		console.log('\n--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments');
-		result = await contract.submitTransaction('CreateAsset', msg['ID'], 'yellow', '5', msg['Owner'], '1300');
+		result = await contract.submitTransaction('CreateAsset', msg['ID'], msg['Owner']);
 		console.log('*** Result: committed');
 		if (`${result}` !== '') {
 			console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 		}
-
-		// console.log('\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID');
-		// result = await contract.evaluateTransaction('ReadAsset', 'asset13');
-		// console.log(`*** Result: ${prettyJSONString(result.toString())}`);
 
 	} catch (error) {
 		console.error(`******** FAILED to run the application: ${error}`);
@@ -112,23 +105,14 @@ async function verify(gateway,msg) {
 
 		const contract = network.getContract(chaincodeName);
 
-		// console.log('\n--> Evaluate Transaction: GetAllAssets, function returns all the current assets on the ledger');
-		// let result = await contract.evaluateTransaction('GetAllAssets');
-		// console.log(`*** Result: ${prettyJSONString(result.toString())}`);
-
-		// console.log('\n--> Submit Transaction: CreateAsset, creates new asset with ID, color, owner, size, and appraisedValue arguments');
-		// result = await contract.submitTransaction('CreateAsset', msg['ID'], 'yellow', '5', msg['Owner'], '1300');
-		// console.log('*** Result: committed');
-		// if (`${result}` !== '') {
-		// 	console.log(`*** Result: ${prettyJSONString(result.toString())}`);
-		// }
-
 		console.log('\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID');
 		result = await contract.evaluateTransaction('ReadAsset', msg['ID']);
 		console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+		return result.toString()
 
 	} catch (error) {
 		console.error(`******** FAILED to run the application: ${error}`);
+		return '{}'
 	} finally {
 		gateway.disconnect();
 	}	
