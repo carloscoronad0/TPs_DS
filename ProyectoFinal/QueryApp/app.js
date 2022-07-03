@@ -59,10 +59,11 @@ client.on('connect', function () {
 });
 
 client.on('message', function(topic, message) {
-	var json_msg = message.toString()
+	var outs = message.toString()
+	var json_msg = {}
 	if (topic === 'register') {
-		console.log(message.toString())
-		json_msg = JSON.parse(message.toString())
+		console.log(outs)
+		json_msg = JSON.parse(outs)
 		register(gateway,json_msg);
 	}
 	if (topic === 'verify') {
