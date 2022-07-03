@@ -60,13 +60,14 @@ client.on('connect', function () {
 
 client.on('message', function(topic, message) {
 	if (topic === 'register') {
+		console.log(message)
 		json_msg = JSON.parse(message)
 		register(gateway,json_msg);
 	}
 	if (topic === 'verify') {
 		json_msg = JSON.parse(message)
 		res = verify(gateway,json_msg);
-		client.publish('results', res);
+		client.publish('result', res);
 	}
 });
 
