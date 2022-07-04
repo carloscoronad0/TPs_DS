@@ -1,7 +1,7 @@
 def make_component_info():
   global client_id, owner
   info = {
-          "Id": client_id,
+          "ID": client_id,
           "Owner": owner
           }
 
@@ -15,7 +15,7 @@ def sub_cb(topic, new_message):
     new_message = new_message.decode('utf-8')
     msg = json.loads(new_message)
 
-    esp_id = msg["Id"]
+    esp_id = msg["ID"]
     print(client_id.decode())
 
     if esp_id == client_id.decode():
@@ -27,7 +27,7 @@ def sub_cb(topic, new_message):
       oled.show()
 
       # Show information
-      oled.text('Id:'+msg["Id"], 0, 0)
+      oled.text('ID:'+msg["ID"], 0, 0)
       oled.text('Owner:'+esp_owner, 0, 10)
 
       if esp_owner != owner:
