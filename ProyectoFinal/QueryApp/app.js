@@ -54,7 +54,7 @@ async function main(){
 			});
 		});
 
-		client.on('message', function(topic, message) {
+		client.on('message',async function(topic, message) {
 			const outs = message.toString()
 			if (topic === 'register') {
 				console.log(outs)
