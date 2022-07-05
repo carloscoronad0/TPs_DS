@@ -61,7 +61,10 @@ def restart_and_reconnect():
 
 def verify_ownership(t):
   global client, client_id, topic_verify
-  client.publish(topic_verify, client_id)
+  temp = {
+    "ID": client_id
+  }
+  client.publish(topic_verify, json.dumps(temp))
 
 try:
   client = connect_and_subscribe()
